@@ -31,12 +31,25 @@ void fd(int m)
     std::array<int, c+1> arr;
     f(c, m, arr);
 }
-/*
-int boite_dynamique(int m, int c, int n, int vi[], int *T[]){
-    //Remplissage du tableau T
+
+int 
+    
+}
+
+int boite_dynamique(int m, int c, int n, int vi[]){
+    //Creation du tableau T
+    //Probleme : tableau a deux dimensions (a priori) mais la deuxieme dimension n'est
+    //pas referencee directement par un indice mais par la combinaison des differentes boites
+    //=> au lieu de mettre "colonne j", on sera a la "colonne (a,b,c,etc.)"
+    //avec a+b+c+...=m (le nombre de boites)a
+    //possibilites : trouver un moyen d'indexer l'array comme ça
+    //autre possibilite : calculer l'indice a partir du (m+1)-uplet avec une autre fonction
+    //Solution : dictionnaire fait a la generation des tuples
+    //on peut d'ailleurs ne maintenir que deux lignes du tableau, on gagne en espace
+    //"Remplissage" du "tableau" T
     //Initialisation des valeurs frontiere
-    return 0;
-}*/
+    
+}
 
 int main()
 {
