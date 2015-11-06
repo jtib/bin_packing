@@ -28,6 +28,10 @@ bool critere_metropolis(int delta, double theta){
     //return new box set
 }
 
+*int[] recuit_simule(int[] I,int m, n, c, k_max, double T, P, alpha){
+    int[m]
+}
+
 int main(int argc, char *argv[]){
     
 
