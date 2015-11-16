@@ -34,22 +34,24 @@ int main(int argc, char *argv[]){
     //Lecture du fichier et enregistrement des volumes dans un array arr
     for (int i = 1; i < argc; ++i) {
         if (std::string(argv[i]) == "-f") {
-           if (i + 1 < argc) { // Make sure we aren't at the end of argv!
-			   // TODO: clean the next few lines...
-               //ifstream myfile;
-               //myfile.open(argv[i++]);
-               //int ints[3];
-               //std::string input;
-               //std::getline(myfile, input);
-               //std::istringstream(input) >> ints[0] >> ints[1] >> ints[2];
-               //n = ints[0];
-               //i++;// Increment 'i' so we don't get the argument as the next argv[i].
-           } else { // Uh-oh, there was no argument to the destination option.
+           if (i + 1 < argc) { //S'assurer qu'on n'est pas a la fin de argv
+			   // TODO: comprendre comment lire ce fichier et achever les lignes qui suivent...
+               ifstream myfile;
+               myfile.open(argv[i++]);
+               int ints[3];
+               // Je ne sais plus ce que je voulais faire ><
+               std::string input;
+               std::getline(myfile, input);
+               std::istringstream(input) >> ints[0] >> ints[1] >> ints[2];
+               n = ints[0];
+               i++;
+           } else { // Si pas de fichier destination indique apres -f
 			   std::cerr << "l'option -f nécessite le nom du fichier en argument" << std::endl;
            }
 		return 1;
-	} 
-                                //La taille de l'array est n
+	    }
+    }
+    //La taille de l'array est n
     sort(arr,arr+n,decroissant);
     int boites[m];
     for(int j=1;j<m;j++)
