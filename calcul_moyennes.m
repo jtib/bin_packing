@@ -9,6 +9,6 @@ for i=0:19
     n=M(i*10+1,2);
     m=M(i*10+1,3);
     volume_restant_moyen=sum(M(i*10+(1:10),4))/10;
-    fprintf(id_fichier,'%i % i %.2f %.2f \n',n,m,temps_moyen,volume_restant_moyen);
+    fprintf(id_fichier,'%i, % i, %.2f, %.2f \n',n,m,temps_moyen,volume_restant_moyen);
 end
 fclose(id_fichier);
