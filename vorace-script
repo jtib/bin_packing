@@ -1,0 +1,52 @@
+#!/bin/bash
+
+for i in 2 3 4 6
+do
+    for j in {0..9}
+    do
+        nomFichier=ex_n0010_m000$i.$j
+        cheminFichier=MiseEnBoite/$nomFichier
+        ./vorace-tests -f "$cheminFichier" >> vorace-resultats.csv 
+    done
+done
+
+for i in 2 3 4 6
+do
+    for j in {0..9}
+    do
+        nomFichier=ex_n0032_m000$i.$j
+        cheminFichier=MiseEnBoite/$nomFichier
+        ./vorace-tests -f "$cheminFichier" >> vorace-resultats.csv 
+    done
+done
+
+for i in 2 3 4 6
+do
+    for j in {0..9}
+    do
+        nomFichier=ex_n0100_m000$i.$j
+        cheminFichier=MiseEnBoite/$nomFichier
+        ./vorace-tests -f "$cheminFichier" >> vorace-resultats.csv 
+    done
+done
+
+for i in 2 3 4 6
+do
+    for j in {0..9}
+    do
+        nomFichier=ex_n0316_m000$i.$j
+        cheminFichier=MiseEnBoite/$nomFichier
+        ./vorace-tests -f "$cheminFichier" >> vorace-resultats.csv 
+    done
+done
+
+for i in 2 3 4 6
+do
+    for j in {0..9}
+    do
+        nomFichier=ex_n1000_m000$i.$j
+        cheminFichier=MiseEnBoite/$nomFichier
+        ./vorace-tests -f "$cheminFichier" >> vorace-resultats.csv 
+    done
+done
+
