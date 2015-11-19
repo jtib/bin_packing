@@ -85,8 +85,49 @@ Box* voisin(Item items[],Box boxes[],int m,int c)
     return boxes;
 }
 
-int recuit_simule(int I[],int m,int n,int c, int k_max, double T, double P, double alpha){
-    return 0;
+int volume(std::vector<Box> boxes,int m)
+{
+    int s=0;
+    for(int i=0;i<m;i++)
+    {
+        s+=boxes[i].occupied;
+    }
+    return s;
+}
+
+
+std::vector<Box> recuit_simule(Item items[],int m,int n,int c, int k_max, double T, double P, double alpha){
+    //Creation of a set of empty boxes
+    std::vector<Box> S;
+    for(int i=0;i<m;i++)
+    {
+        Box b;
+        b.occupied=0;
+        S[i]=b;
+    }
+
+    //Other declarations/initializations
+    std::vector<Box> S_meilleur=S;
+    double theta = T;
+    std::vector<Box> S_prime;
+    int delta;
+
+    for(int k=1;k<=k_max;k++)
+    {
+        for(int j=1;j<=P;j++)
+        {
+            S_prime=voisin(items,S,m,c);
+            delta=volume(S_prime,m)-volume(S,m);
+            if(critere_metropolis(delta,theta))
+            {
+                S=S_prime;
+                if(volume(S,m)>volume(S_meilleur,m))
+                    S_meilleur=S;
+            }
+        }
+        theta=theta*alpha;
+    }
+    return S_meilleur;
 }
 
 int main(int argc, char *argv[]){ 
@@ -127,9 +168,6 @@ int main(int argc, char *argv[]){
             }
             return 1;
         } 
-        //La taille de l'array est n
-
-        int boites[m];
     }
     return 0;
 }
