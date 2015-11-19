@@ -42,7 +42,7 @@ bool sort_in_box_or_not(Item litem, Item ritem)
     return litem.in_box <= ritem.in_box;
 }
 
-Box* voisin(Item items[],Box boxes[],int m,int c)
+std::vector<Box> voisin(std::vector<Item> items,std::vector<Box> boxes,int m,int c)
 {
     //choose an item not already placed
     //put it in a box randomly chosen (uniform probability distribution)
@@ -96,15 +96,12 @@ int volume(std::vector<Box> boxes,int m)
 }
 
 
-std::vector<Box> recuit_simule(Item items[],int m,int n,int c, int k_max, double T, double P, double alpha){
+std::vector<Box> recuit_simule(std::vector<Item> items,int m,int n,int c, int k_max, double T, double P, double alpha){
     //Creation of a set of empty boxes
     std::vector<Box> S;
-    for(int i=0;i<m;i++)
-    {
-        Box b;
-        b.occupied=0;
-        S[i]=b;
-    }
+    Box b;
+    b.occupied=0;
+    S.assign(m,b);
 
     //Other declarations/initializations
     std::vector<Box> S_meilleur=S;
