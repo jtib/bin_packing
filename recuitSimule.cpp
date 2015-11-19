@@ -36,7 +36,13 @@ bool critere_metropolis(int delta, double theta){
     return false;
 }
 
-*int[] voisin(Item[] items,Box[] boxes,int m,int c)
+//Function for sorting items according to in_box
+bool sort_in_box_or_not(Item litem, Item ritem)
+{
+    return litem.in_box <= ritem.in_box;
+}
+
+Box* voisin(Item items[],Box boxes[],int m,int c)
 {
     //choose an item not already placed
     //put it in a box randomly chosen (uniform probability distribution)
@@ -45,9 +51,8 @@ bool critere_metropolis(int delta, double theta){
     //return new box set
 
     //find last unplaced item
-    //items is sorted before this
     int i=0;
-    while(items[i].placed==0)
+    while(items[i].in_box==0)
         i++;
 
     //choice of random item
@@ -57,31 +62,31 @@ bool critere_metropolis(int delta, double theta){
     int s=rand() %m; 
 
     //item placement
-    if(items[r].vi+boxes[s].occupied<=c)
+    if(items[r].v_item+boxes[s].occupied<=c)
     {
-        items[r].placed=1;
+        items[r].in_box=1;
         boxes[s].things.push_back(items[r]);
-        boxes[s].occupied+=items[r].vi;
+        boxes[s].occupied+=items[r].v_item;
     }
     else
     {
-        items[r].placed=1;
+        items[r].in_box=1;
         boxes[s].things.push_back(items[r]);
-        boxes[s].occupied+=items[r].vi;
+        boxes[s].occupied+=items[r].v_item;
         //Removal of random element in the box
         int t=rand() %boxes[s].things.size();
         int index=boxes[s].things.at(t).place_in_list;
         //Erasure from the box
         boxes[s].things.erase(boxes[s].things.begin()+t);
-        boxes[s].occupied-=items[index].vi;
+        boxes[s].occupied-=items[index].v_item;
         //Marked as not placed in items list
         items[index].in_box=0;
     }
-
+    return boxes;
 }
 
-*int[] recuit_simule(int[] I,int m, n, c, k_max, double T, P, alpha){
-    int[m]
+int recuit_simule(int I[],int m,int n,int c, int k_max, double T, double P, double alpha){
+    return 0;
 }
 
 int main(int argc, char *argv[]){ 
@@ -99,12 +104,19 @@ int main(int argc, char *argv[]){
                     myfile >> n;
                     myfile >> m;
                     myfile >> c;
-                    int items[n][2];
-                    for(int i=0;i<n;i++)
+                    //int arr[n];
+                    std::vector<Item> items;
+                    for(vector<Item>::size_type i=0;i<n;i++)
                     {
-                        myfile >> items[i][0];
-                        items[i][1]=0;
+                        //myfile >> arr[i];
+                        myfile >> items[i].v_item;
+                        items[i].in_box=0;
+                        items[i].place_in_list=i;
                     }
+
+                    //sort items
+                    sort(items.begin(),items.end(),sort_in_box_or_not);
+
                 }
                 else
                 {
@@ -120,7 +132,6 @@ int main(int argc, char *argv[]){
         int boites[m];
     }
     return 0;
-
 }
 
 /*
