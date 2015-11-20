@@ -38,6 +38,9 @@ std::vector<vector<int> > voisin(std::vector<vector<int> > *boxes,std::vector<in
     std::vector<int>::iterator it;
     int nplcd=(*not_placed).size();
     int plcd=(*placed).size();
+    std::vector<vector<int> > myvec(m);
+    std::copy((*boxes).begin(),(*boxes).end(),myvec.begin());
+    //std::vector<int> *neighbor
 
     std::random_device rand_dev;
     std::mt19937 generator(rand_dev());
@@ -52,8 +55,8 @@ std::vector<vector<int> > voisin(std::vector<vector<int> > *boxes,std::vector<in
 
     //addition of new volume to selected box
     v_to_place=(*not_placed)[r];
-    (*boxes)[s].push_back(v_to_place);
-    int size_box=(*boxes)[s].size();
+    myvec[s].push_back(v_to_place);
+    int size_box=myvec[s].size();
 
     //mv placed/v_to_place not_placed/
     (*not_placed).erase((*not_placed).begin()+r);
@@ -62,18 +65,18 @@ std::vector<vector<int> > voisin(std::vector<vector<int> > *boxes,std::vector<in
 
     //Box volume > c?
     box_volume=0;
-    for(int vol : (*boxes)[s])
+    for(int vol : myvec[s])
         box_volume+=vol;
 
     //Removal of random item from box
     while(box_volume>c)
     {
-        int box_size=(*boxes)[s].size();
+        int box_size=myvec[s].size();
         std::uniform_int_distribution<int> distribution_a(0,box_size-1);
         a=distribution_a(generator);
 
-        v_to_remove=(*boxes)[s][a];
-        (*boxes)[s].erase((*boxes)[s].begin()+a);
+        v_to_remove=myvec[s][a];
+        myvec[s].erase(myvec[s].begin()+a);
 
         it=find((*placed).begin(),(*placed).end(),v_to_remove);
         int index=it-(*placed).begin();
@@ -82,11 +85,11 @@ std::vector<vector<int> > voisin(std::vector<vector<int> > *boxes,std::vector<in
 
         //Box volume > c?
         box_volume=0;
-        for(int vol : (*boxes)[s])
+        for(int vol : myvec[s])
             box_volume+=vol;
     }
 
-    return (*boxes);
+    return myvec;
 }
 
 int volume_solution(std::vector<vector<int> > *sol,int m)
