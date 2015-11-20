@@ -8,24 +8,10 @@
 #include <cmath>
 #include <fstream>
 #include <vector>
+#include <random>
 
 using namespace std;
 using namespace std::chrono;
-
-//Struct for an item and whether or not it has been placed
-struct Item
-{
-    int v_item;
-    int in_box;
-    int place_in_list;
-};
-
-//Struct for a box
-struct Box
-{
-    std::vector<Item> things;
-    int occupied;
-};
 
 bool critere_metropolis(int delta, double theta){
     bool b;
@@ -36,105 +22,135 @@ bool critere_metropolis(int delta, double theta){
     return false;
 }
 
-//Function for sorting items according to in_box
-bool sort_in_box_or_not(Item litem, Item ritem)
-{
-    return litem.in_box <= ritem.in_box;
-}
-
-std::vector<Box> voisin(std::vector<Item> items,std::vector<Box> boxes,int m,int c)
+std::vector<vector<int> > voisin(std::vector<vector<int> > *boxes,std::vector<int> *placed, std::vector<int> *not_placed, int m,int c)
 {
     //choose an item not already placed
     //put it in a box randomly chosen (uniform probability distribution)
     //if box overflow, choose random item in this box and put it out
     //until no overflow
     //return new box set
+    int r;
+    int s;
+    int a;
+    int v_to_place;
+    int v_to_remove;
+    int box_volume;
+    std::vector<int>::iterator it;
+    int nplcd=(*not_placed).size();
+    int plcd=(*placed).size();
 
-    //find last unplaced item
-    int i=0;
-    while(items[i].in_box==0)
-        i++;
+    std::random_device rand_dev;
+    std::mt19937 generator(rand_dev());
 
     //choice of random item
-    int r=rand() %i; 
+    std::uniform_int_distribution<int> distribution_r(0,nplcd-1);
+    r=distribution_r(generator);
 
     //choice of random box
-    int s=rand() %m; 
+    std::uniform_int_distribution<int> distribution_s(0,m-1);
+    s=distribution_s(generator);
 
-    //item placement
-    if(items[r].v_item+boxes[s].occupied<=c)
+    //addition of new volume to selected box
+    v_to_place=(*not_placed)[r];
+    (*boxes)[s].push_back(v_to_place);
+    int size_box=(*boxes)[s].size();
+
+    //mv placed/v_to_place not_placed/
+    (*not_placed).erase((*not_placed).begin()+r);
+    (*placed).push_back(v_to_place);
+    int size_placed=(*placed).size();
+
+    //Box volume > c?
+    box_volume=0;
+    for(int vol : (*boxes)[s])
+        box_volume+=vol;
+
+    //Removal of random item from box
+    while(box_volume>c)
     {
-        items[r].in_box=1;
-        boxes[s].things.push_back(items[r]);
-        boxes[s].occupied+=items[r].v_item;
+        int box_size=(*boxes)[s].size();
+        std::uniform_int_distribution<int> distribution_a(0,box_size-1);
+        a=distribution_a(generator);
+
+        v_to_remove=(*boxes)[s][a];
+        (*boxes)[s].erase((*boxes)[s].begin()+a);
+
+        it=find((*placed).begin(),(*placed).end(),v_to_remove);
+        int index=it-(*placed).begin();
+        (*placed).erase((*placed).begin()+index);
+        (*not_placed).push_back(v_to_remove);
+
+        //Box volume > c?
+        box_volume=0;
+        for(int vol : (*boxes)[s])
+            box_volume+=vol;
     }
-    else
-    {
-        items[r].in_box=1;
-        boxes[s].things.push_back(items[r]);
-        boxes[s].occupied+=items[r].v_item;
-        //Removal of random element in the box
-        int t=rand() %boxes[s].things.size();
-        int index=boxes[s].things.at(t).place_in_list;
-        //Erasure from the box
-        boxes[s].things.erase(boxes[s].things.begin()+t);
-        boxes[s].occupied-=items[index].v_item;
-        //Marked as not placed in items list
-        items[index].in_box=0;
-    }
-    return boxes;
+
+    return (*boxes);
 }
 
-int volume(std::vector<Box> boxes,int m)
+int volume_solution(std::vector<vector<int> > *sol,int m)
 {
-    int s=0;
+    int box_volume;
+    int volume=0;
     for(int i=0;i<m;i++)
     {
-        s+=boxes[i].occupied;
+        box_volume=0;
+        for(int vol : (*sol)[i])
+            box_volume+=vol;
+        volume+=box_volume;
     }
-    return s;
+    cout << volume << endl;
+    return volume;
 }
 
-
-std::vector<Box> recuit_simule(std::vector<Item> items,int m,int n,int c, int k_max, double T, double P, double alpha){
+std::vector<vector<int> > recuit_simule(std::vector<int> *items,int m,int n,int c, int k_max, double T, int P, double alpha){
     //Creation of a set of empty boxes
-    std::vector<Box> S;
-    Box b;
-    b.occupied=0;
-    S.assign(m,b);
+    std::vector<vector<int> > *S = new std::vector<vector<int> >;
+    (*S).resize(m);
 
     //Other declarations/initializations
-    std::vector<Box> S_meilleur=S;
+    std::vector<vector<int> > *S_meilleur=new std::vector<vector<int> >;
+    *S_meilleur=*S;
     double theta = T;
-    std::vector<Box> S_prime;
+    std::vector<vector<int> > *S_prime=new std::vector<vector<int> >;
     int delta;
+    std::vector<int> *not_placed=new std::vector<int>;
+    *not_placed=*items;
+    std::vector<int> *placed=new vector<int>;
 
     for(int k=1;k<=k_max;k++)
     {
         for(int j=1;j<=P;j++)
         {
-            S_prime=voisin(items,S,m,c);
-            delta=volume(S_prime,m)-volume(S,m);
+            *S_prime=voisin(S,placed,not_placed,m,c);
+            cout << "voisin ok" << endl;
+            delta=volume_solution(S_prime,m)-volume_solution(S,m);
+            cout << delta << endl;
             if(critere_metropolis(delta,theta))
             {
                 S=S_prime;
-                if(volume(S,m)>volume(S_meilleur,m))
+                if(volume_solution(S,m)>volume_solution(S_meilleur,m))
                     S_meilleur=S;
             }
         }
         theta=theta*alpha;
     }
-    return S_meilleur;
+    return *S_meilleur;
 }
 
 int main(int argc, char *argv[]){ 
     int n;
     int m;
     int c;
-    //Lecture du fichier et enregistrement des volumes dans un array arr
+    int volumeTotalBoites;
+    int volumeTotalItems;
+    int vi;
+
+    //Lecture du fichier et enregistrement des volumes dans un array items
     for (int i = 1; i < argc; ++i) {
         if (std::string(argv[i]) == "-f") {
-            if (i + 1 < argc) { // Make sure we aren't at the end of argv! 
+            if (i + 1 < argc) { // Attention a la fin de argv
                 ifstream myfile(argv[i+1]);
                 if(myfile)
                 {
@@ -142,25 +158,55 @@ int main(int argc, char *argv[]){
                     myfile >> n;
                     myfile >> m;
                     myfile >> c;
-                    //int arr[n];
-                    std::vector<Item> items;
-                    for(vector<Item>::size_type i=0;i<n;i++)
+                    std::vector<int> *items=new vector<int>;
+                    //(*items).resize(n);
+
+                    //Calcul du volume total des items et ajout dans le vecteur d'items
+                    volumeTotalItems=0;
+                    for(vector<int>::size_type i=0;i<n;i++)
                     {
-                        //myfile >> arr[i];
-                        myfile >> items[i].v_item;
-                        items[i].in_box=0;
-                        items[i].place_in_list=i;
+
+                        myfile >> vi;
+                        (*items).push_back(vi);
+                        volumeTotalItems+=vi;
                     }
 
-                    //sort items
-                    sort(items.begin(),items.end(),sort_in_box_or_not);
+                    //Volume total des boîtes
+                    volumeTotalBoites=c*m;
 
+                    int k_max=20;
+                    double T=40;
+                    int P=20;
+                    double alpha=0.99;
+                    std::vector<vector<int> > *solution;
+
+                    //On debute la mesure du temps de calcul apres la derniere declaration
+                    auto start=std::chrono::high_resolution_clock::now();
+
+                    (*solution)=recuit_simule(items,m,n,c,k_max,T,P,alpha);
+
+                    //On arrête la mesure du temps de calcul après la fonction qui place les items dans les boites
+                    auto finish = std::chrono::high_resolution_clock::now();
+                    //Calcul du temps d'execution 
+                    auto microsec = std::chrono::duration_cast<std::chrono::microseconds>(finish-start);
+
+                    cout << "Volume totale de boites : " << volumeTotalBoites << endl;
+                    cout << "Volume total des items : " << volumeTotalItems << endl;
+                    cout << "Temps de calcul : " << microsec.count() << " ms" << endl;
+
+                    //On regarde si le paramètre -p a été mis
+                    for(int j=1;j<argc;j++){
+                        if(j  < argc && std::string(argv[j]) == "-p"){
+                            for(int k=1;k<=m;k++)
+                                cout << "Contenu de la boite " << k << " : " << endl;
+                        }
+                    }
                 }
                 else
                 {
                     cout << "Erreur d'ouverture du fichier" << endl;
                 }
-            } else { // Uh-oh, there was no argument to the destination option.
+            } else { // Pas de chemin vers un fichier
                 std::cerr << "l'option -f nécessite le nom du fichier en argument" << std::endl;
             }
             return 1;
