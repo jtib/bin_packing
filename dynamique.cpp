@@ -11,74 +11,54 @@
 #include <algorithm>
 #include <cstdlib>
 
-/*
- * c : capacite des boites
- * m : nombre de boites
- */
-    template<std::size_t size>
-void f(int c, int m, std::array<int, size> arr)
-{
-    if(c > 0) {
-        for(int i=0; i<=m; i++) {
-            arr[size - 1 - c] = m - i;
-            f(c-1, i, arr);
-        }
-    } else {
-        arr[size - 1] = m;
-        for(auto e : arr)
-            std::cout << e << " ";
-        std::cout << std::endl;
-    }
-};
 
-    template<std::size_t capa>
-void fd(int m)
-{
-    std::array<int, capa+1> arr;
-    f(capa, m, arr);
-};
-
-// à utiliser pour récapaupérer au plus vite les indices sur le buffer precédent
-template<std::size_t capa, size_t m>
+//get indexes on previous buffer 
 struct Repartition {
-    int Data[capa+1] = {0};
+    int capa;
+    int m;
+    int *Data;
     //----
-    Repartition() { Data[0] = m; };
-    //-
-    const int& operator[] (int i) const {return Data[i];};
-    /* */ int& operator[] (int i) /* */ {return Data[i];};
-    //-
-    Repartition& operator--(){
-        Repartition& r = *this;
-        int cnt = r.Data[capa];
-        if (cnt==m){
-            printf("Should not happen!\n");
-            return r;
-        }
-        int* pIt = &r.Data[capa];
-        bool b(true);
-        while (b){
-            --pIt;
-            if ((*pIt)!=0){
-                --(*pIt);
-                *(++pIt) = cnt+1;
-                b=false;
+
+    Repartition(int c,int m_rep) {
+        capa=c;
+        m=m_rep;
+        Data=(int*) calloc(capa+1, sizeof(int));;
+        Data[0] = m; };
+        //-
+        const int& operator[] (int i) const {return Data[i];};
+        /* */ int& operator[] (int i) /* */ {return Data[i];};
+        //-
+        Repartition& operator--(){
+            Repartition& r = *this;
+            int cnt = r.Data[capa];
+            if (cnt==m){
+                printf("Should not happen!\n");
+                return r;
             }
-            cnt+=*pIt;
+            int* pIt = &r.Data[capa];
+            bool b(true);
+            while (b){
+                --pIt;
+                if ((*pIt)!=0){
+                    --(*pIt);
+                    *(++pIt) = cnt+1;
+                    b=false;
+                }
+                cnt+=*pIt;
+            }
+            while (++pIt<&r.Data[capa+1])
+                *pIt = 0;
+            return r;
+        };
+        void renew(){
+            memset(Data, 0, (capa+1)*sizeof(int));
+            Data[0] = m;
         }
-        while (++pIt<&r.Data[capa+1])
-            *pIt = 0;
-        return r;
-    };
-    void renew(){
-        memset(Data, 0, (capa+1)*sizeof(int));
-        Data[0] = m;
-    }
-    void print(){
-        for (int i=0; i<capa+1; ++i)
-            std::cout << Data[i] << " ";
-        std::cout << std::endl;
-    }
+        void print(){
+            for (int i=0; i<capa+1; ++i)
+                std::cout << Data[i] << " ";
+            std::cout << std::endl;
+        }
 };
 
 // c parmi (m+c) = [(m+1)*..*(m+c)]/(c!)
@@ -95,18 +75,18 @@ int weakCompo(const int c, const int m){
 };
 
 // (c-1 parmi m+c-1) - (c-1 parmi w-1+c-1)
-template<std::size_t capa, std::size_t m>
-int lastIndexForWeight(int w){
+//template<std::size_t capa, std::size_t m>
+int lastIndexForWeight(int w,int capa,int m){
     int wcp = weakCompo(capa, m);
     int wcm = weakCompo(w-1, m);
     return (wcp - wcm);
 };
 
 // To calculate where to go next
-template<std::size_t capa, std::size_t m>
-int prevBufferIndex(const Repartition<capa, m>& currentRepart, int k, const int vi){
-    Repartition<capa, m> tempRepart;
-    memcpy(&tempRepart, &currentRepart, sizeof(Repartition<capa,m>)); 
+//template<std::size_t capa, std::size_t m>
+int prevBufferIndex(const Repartition& currentRepart, int k, int vi, int capa, int m){
+    Repartition tempRepart = *new Repartition(capa,m);
+    memcpy(tempRepart.Data, currentRepart.Data, tempRepart.capa*sizeof(int));
     if (tempRepart[capa-k]>0){
         --tempRepart[capa-k];
         ++tempRepart[capa-(k-vi)];
@@ -126,23 +106,23 @@ int prevBufferIndex(const Repartition<capa, m>& currentRepart, int k, const int 
 
 bool descending(int i, int j){return i>j;}
 
-template<std::size_t capa, std::size_t m>
-int boite_dynamique(int n, int vi[]){
+//template<std::size_t capa, std::size_t m>
+int boite_dynamique(const int n, int vi[],int capa,int m, bool display){
     //Creation du tableau T
     //Problem : 2-dim array with several numbers for second index
     //Solution : map with first index and second index as key and volume as value
 
-    // Let's sort the weights descending order
-    std::sort(vi[0],vi[n-1],descending);
+    // Let's sort the weights in descending order
+    std::sort(vi,vi+n,descending);
 
     // Let's Initialize 2 buffers
     const int BufferSize = weakCompo(capa, m);
     int* BufferDataIprev = (int*) calloc(BufferSize, sizeof(int));
     int* BufferDataI = (int*) calloc(BufferSize, sizeof(int));
-    int  Trace[BufferSize][n] = {-1};
+    int  Trace[BufferSize][n];// = {-1};
     int  iLastIndex(0);
 
-    Repartition<capa, m> currentRepartition;
+    Repartition currentRepartition(capa,m);
 
 
     // Let's Iterate throuht the weights
@@ -160,7 +140,7 @@ int boite_dynamique(int n, int vi[]){
         // Get Next weight in line
         int objectWeight = vi[iObject];
         // Calculate LastIndex which matters for this weight
-        iLastIndex = lastIndexForWeight<capa, m>(objectWeight);
+        iLastIndex = lastIndexForWeight(objectWeight,capa,m);
 
         // Iterate on the different configurations
         for (int iCurrentIndex=0; iCurrentIndex < iLastIndex; ++iCurrentIndex, --currentRepartition)
@@ -169,7 +149,7 @@ int boite_dynamique(int n, int vi[]){
             // Compose through what is necessary
             for (int k=objectWeight; k<=capa; ++k)
             {
-                int iPrev = prevBufferIndex<capa, m>(currentRepartition, k, objectWeight);
+                int iPrev = prevBufferIndex(currentRepartition, k, objectWeight, capa, m);
                 if (iPrev>=0)
                 {
                     int compWeight = objectWeight + BufferDataIprev[iPrev];
@@ -194,34 +174,37 @@ int boite_dynamique(int n, int vi[]){
     std::cout << "//--- Analyse des résultats ---//" << std::endl;
     std::cout << "Volume maximal atteignable : " << BufferDataI[0] << std::endl;
 
-    // --- Affichage des cases ---
-    int Cases[m];
-    std::vector<int> casesVec[m];
-    //int* itStart = Cases;
-    //int* itEnd   = &Cases[m];
-    for (int j=0; j<m; ++j) { Cases[j]=capa; }
-    std::cout << std::endl;
-    for (int i=0; i<n; ++i)
+    if(display)
     {
-        for (int j=0; j<m; ++j){
-            if (Cases[j]>=vi[i]){
-                casesVec[j].push_back(i);
-                Cases[j] = Trace[0][i];
-                break;
-                //std::cout << "Object " << i << " utilise " << Trace[0][i] << " en plus de son poids (" << vi[i] << ")" << std::endl;
+        // --- Affichage des cases ---
+        int Cases[m];
+        std::vector<std::vector<int> > casesVec;
+        casesVec.resize(m);
+        //int* itStart = Cases;
+        //int* itEnd   = &Cases[m];
+        for (int j=0; j<m; ++j) { Cases[j]=capa; }
+        std::cout << std::endl;
+        for (int i=0; i<n; ++i)
+        {
+            for (int j=0; j<m; ++j){
+                if (Cases[j]>=vi[i]){
+                    casesVec[j].push_back(i);
+                    Cases[j] = Trace[0][i];
+                    break;
+                    //std::cout << "Object " << i << " utilise " << Trace[0][i] << " en plus de son poids (" << vi[i] << ")" << std::endl;
+                }
             }
         }
-    }
 
-    std::cout << "Case numCase : [ Objet(Volume_Objet), ... ]" << std::endl;
-    for (int j=0; j<m; ++j){
-        std::cout << "Case " << j << " : [ ";
-        for (int i=0; i<casesVec[j].size(); i++){
-            std::cout << casesVec[j][i] << "(" << vi[casesVec[j][i]] << ") ";
+        std::cout << "Case numCase : [ Objet(Volume_Objet), ... ]" << std::endl;
+        for (int j=0; j<m; ++j){
+            std::cout << "Case " << j << " : [ ";
+            for (int i=0; i<casesVec[j].size(); i++){
+                std::cout << casesVec[j][i] << "(" << vi[casesVec[j][i]] << ") ";
+            }
+            std::cout << "]" << std::endl;
         }
-        std::cout << "]" << std::endl;
     }
-
 
     // Create Table to work with, map is not such a great idea
     // It would take O(n) to search for one element in it
@@ -232,7 +215,7 @@ int boite_dynamique(int n, int vi[]){
     // So for a given v_i nothing less than v_i will be touched
     // 
     // ...
-    // Ok let's skip this crap...
+    // Ok let's skip this...
     // V[n](0, 0, ..., m) = max (V[n-1](0, 0, ..., m), c + V[n-1](1, 0, 0, ..., m-1), (c-1)*max(V[n-1](1, 0, ..., 0, m-1), V[n-1](0, 1, 0, ..., 0, m-1)), (c-2)...)
 }
 
@@ -243,20 +226,19 @@ int main(int argc,char *argv[])
 
     //typedef Repartition<c, m> Rep3;
 
-    //J was here
     for (int i = 1; i < argc; ++i) {
         if (std::string(argv[i]) == "-f") {
             if (i + 1 < argc) {  
                 int n;
                 int m;
                 int c;
-                //Lecture du fichier et enregistrement des volumes dans un array tab
+                //File reading, storage in tab
                 //informations
                 int volumeTotalBoites = 0;
                 int volumeTotalItems = 0;
                 float tempsCalcul = 0;
 
-                //Lecture du fichier et enregistrement des volumes dans un array tab
+                //Reading
                 std::ifstream myFile;
                 myFile.open(argv[i+1]);
                 std::string input;
@@ -267,7 +249,7 @@ int main(int argc,char *argv[])
                 std::string volume;
                 std::getline(myFile, volume);
                 std::istringstream streamV(volume);
-                
+
                 int tab[n];
                 for(int j=0 ; j < n ; j++){
                     streamV >> tab[j];
@@ -277,19 +259,33 @@ int main(int argc,char *argv[])
                 for(int j=0;j<n;j++)
                     volumeTotalItems += tab[j];
 
-
-                //J died here
-
-
-                int n_const = n;
-                std::size_t m_const = m;
-                int c_const = c;
-                //int tab[5] = {4, 4, 4, 4, 1};
-                boite_dynamique<c_const, m_const>(n_const, tab);
-
+                bool disp = false;
+                for(int j=1;j<argc;j++){
+                    if(j  < argc && std::string(argv[j]) == "-p"){
+                        disp=true;
+                    }
+                }
+                    if(disp)
+                    {
+                        auto start = std::chrono::high_resolution_clock::now();
+                        boite_dynamique(n,tab,c,m,true);
+                        auto finish = std::chrono::high_resolution_clock::now();
+                        //time of execution
+                        auto microseconds = std::chrono::duration_cast<std::chrono::microseconds>(finish-start);
+                        std::cout << "Temps de calcul : " << microseconds.count() << " ms" << std::endl;
+                    }
+                    else
+                    {
+                        auto start = std::chrono::high_resolution_clock::now();
+                        boite_dynamique(n,tab,c,m,false);
+                        auto finish = std::chrono::high_resolution_clock::now();
+                        //time of execution
+                        auto microseconds = std::chrono::duration_cast<std::chrono::microseconds>(finish-start);
+                        std::cout << "Temps de calcul : " << microseconds.count() << " ms" << std::endl;
+                    } 
             }
         }
-        }
-        //std::cout << tab[0] << std::endl;
-        return 0;
     }
+    //std::cout << tab[0] << std::endl;
+    return 0;
+}
