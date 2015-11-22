@@ -2,3 +2,13 @@
 \contentsline {chapter}{0. Introduction}{2}
 \contentsline {chapter}{1. Revue de la th\'eorie}{3}
 \contentsline {chapter}{2. Protocole exp\'erimental}{4}
+\contentsline {section}{2.1 Algorithme vorace}{4}
+\contentsline {section}{2.2 Algorithme de programmation dynamique}{4}
+\contentsline {section}{2.3 Algorithme de recuit simul\'e}{5}
+\contentsline {chapter}{3. Pr\'esentation des r\'esultats}{6}
+\contentsline {section}{3.1 Algorithme vorace}{6}
+\contentsline {section}{3.2 Algorithme dynamique}{6}
+\contentsline {chapter}{4. Analyse des r\'esultats}{8}
+\contentsline {section}{4.1 Algorithme vorace}{8}
+\contentsline {section}{4.2 Dynamique}{8}
+\contentsline {chapter}{5. Conclusion}{9}

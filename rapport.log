@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015) (preloaded format=pdflatex 2015.9.7)  20 NOV 2015 04:40
+This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015) (preloaded format=pdflatex 2015.9.7)  20 NOV 2015 08:21
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -421,26 +421,12 @@ LaTeX Font Info:    Try loading font information for U+msb on input line 35.
 (/usr/local/texlive/2015/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 )
+<logo_Poly.jpg, id=1, 207.02344pt x 112.92188pt>
+File: logo_Poly.jpg Graphic file (type jpg)
+ <use logo_Poly.jpg>
+Package pdftex.def Info: logo_Poly.jpg used on input line 35.
+(pdftex.def)             Requested size: 284.52756pt x 155.21376pt.
 
-LaTeX Warning: File `logo_Poly.jpg' not found on input line 35.
-
-
-./rapport.tex:35: Package pdftex.def Error: File `logo_Poly.jpg' not found.
-
-See the pdftex.def package documentation for explanation.
-Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.35 \maketitle
-               
-Using draft setting for this image.
-Try typing  <return>  to proceed.
-If that doesn't work, type  X <return>  to quit.
-
-LaTeX Font Info:    Try loading font information for T1+cmtt on input line 35.
-(/usr/local/texlive/2015/texmf-dist/tex/latex/base/t1cmtt.fd
-File: t1cmtt.fd 2014/09/29 v2.5h Standard LaTeX font definitions
-)
 ./rapport.tex:35: Extra }, or forgotten \endgroup.
 \maketitle ...c {\@bspredate \@date \@bspostdate }
                                                    \maketitlehookd \par \@th...
@@ -454,7 +440,8 @@ deleted material, e.g., by typing `I$}'.
 
 [1
 
-{/usr/local/texlive/2015/texmf-var/fonts/map/pdftex/updmap/pdftex.map}]
+{/usr/local/texlive/2015/texmf-var/fonts/map/pdftex/updmap/pdftex.map} <./logo_
+Poly.jpg>]
 
 ./rapport.tex:35: LaTeX Error: \begin{center} on input line 35 ended by \end{ti
 tlepage}.
@@ -479,22 +466,52 @@ or  <return>  to continue without it.
 
 ] [3
 
+] [4
+
+] [5]
+<tableau_vor.jpg, id=33, 493.845pt x 364.36125pt>
+File: tableau_vor.jpg Graphic file (type jpg)
+ <use tableau_vor.jpg>
+Package pdftex.def Info: tableau_vor.jpg used on input line 128.
+(pdftex.def)             Requested size: 398.33858pt x 293.89117pt.
+
+<histo_1.jpg, id=34, 567.11874pt x 220.825pt>
+File: histo_1.jpg Graphic file (type jpg)
+ <use histo_1.jpg>
+Package pdftex.def Info: histo_1.jpg used on input line 134.
+(pdftex.def)             Requested size: 398.33858pt x 155.10881pt.
+
+<histo_2.jpg, id=35, 584.1825pt x 197.73875pt>
+File: histo_2.jpg Graphic file (type jpg)
+ <use histo_2.jpg>
+Package pdftex.def Info: histo_2.jpg used on input line 140.
+(pdftex.def)             Requested size: 398.33858pt x 134.83772pt.
+ [6
+
+] [7 <./tableau_vor.jpg> <./histo_1.jpg> <./histo_2.jpg>]
+Overfull \hbox (3.12813pt too wide) in paragraph at lines 172--174
+\T1/cmr/m/n/12 nombre de boîtes. Par manque de temps en-core, les co-ef-fi-cien
+ts nu-mé-riques manquent. 
+ []
+
+[8
+
 ]
 
-./rapport.tex:75: LaTeX Error: \begin{titlepage} on input line 35 ended by \end
-{document}.
+./rapport.tex:183: LaTeX Error: \begin{titlepage} on input line 35 ended by \en
+d{document}.
 
 See the LaTeX manual or LaTeX Companion for explanation.
 Type  H <return>  for immediate help.
  ...                                              
                                                   
-l.75 \end{document}
-                   
+l.183 \end{document}
+                    
 Your command was ignored.
 Type  I <command> <return>  to replace it with another command,
 or  <return>  to continue without it.
 
-[4
+[9
 
 ] (./rapport.aux) )
 (\end occurred inside a group at level 2)
@@ -503,28 +520,29 @@ or  <return>  to continue without it.
 ### semi simple group (level 1) entered at line 35 (\begingroup)
 ### bottom level 
 Here is how much of TeX's memory you used:
- 6885 strings out of 493089
- 105921 string characters out of 6134843
- 179429 words of memory out of 5000000
- 10236 multiletter control sequences out of 15000+600000
- 18357 words of font info for 54 fonts, out of 8000000 for 9000
+ 6889 strings out of 493089
+ 105671 string characters out of 6134843
+ 180429 words of memory out of 5000000
+ 10241 multiletter control sequences out of 15000+600000
+ 18044 words of font info for 53 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 40i,6n,46p,385b,439s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 40i,6n,46p,711b,439s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/local/texlive/2015/texmf-dist/fonts/enc/dvips/cm-super/cm
 -super-t1.enc}</usr/local/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/c
 m/cmmi12.pfb></usr/local/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm
-/cmr12.pfb></usr/local/texlive/2015/texmf-dist/fonts/type1/public/cm-super/sfbx
-1200.pfb></usr/local/texlive/2015/texmf-dist/fonts/type1/public/cm-super/sfbx17
-28.pfb></usr/local/texlive/2015/texmf-dist/fonts/type1/public/cm-super/sfbx2488
-.pfb></usr/local/texlive/2015/texmf-dist/fonts/type1/public/cm-super/sfcc1440.p
-fb></usr/local/texlive/2015/texmf-dist/fonts/type1/public/cm-super/sfrm1200.pfb
-></usr/local/texlive/2015/texmf-dist/fonts/type1/public/cm-super/sfrm1440.pfb><
-/usr/local/texlive/2015/texmf-dist/fonts/type1/public/cm-super/sfrm1728.pfb></u
-sr/local/texlive/2015/texmf-dist/fonts/type1/public/cm-super/sftt1440.pfb>
-Output written on rapport.pdf (5 pages, 148106 bytes).
+/cmmi8.pfb></usr/local/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/c
+mr12.pfb></usr/local/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cms
+y10.pfb></usr/local/texlive/2015/texmf-dist/fonts/type1/public/cm-super/sfbx120
+0.pfb></usr/local/texlive/2015/texmf-dist/fonts/type1/public/cm-super/sfbx1728.
+pfb></usr/local/texlive/2015/texmf-dist/fonts/type1/public/cm-super/sfbx2488.pf
+b></usr/local/texlive/2015/texmf-dist/fonts/type1/public/cm-super/sfcc1440.pfb>
+</usr/local/texlive/2015/texmf-dist/fonts/type1/public/cm-super/sfrm1200.pfb></
+usr/local/texlive/2015/texmf-dist/fonts/type1/public/cm-super/sfrm1440.pfb></us
+r/local/texlive/2015/texmf-dist/fonts/type1/public/cm-super/sfrm1728.pfb>
+Output written on rapport.pdf (10 pages, 299899 bytes).
 PDF statistics:
- 61 PDF objects out of 1000 (max. 8388607)
- 43 compressed objects within 1 object stream
+ 86 PDF objects out of 1000 (max. 8388607)
+ 58 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
- 1 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 21 words of extra memory for PDF output out of 10000 (max. 10000000)
 

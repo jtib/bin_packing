@@ -68,10 +68,114 @@ Il repose sur le choix aléatoire d'une solution donnée pour ensuite la modifier 
 On parle alors de voisinage.
 Dans le cas de la mise en boîtes, la solution voisine est obtenue en choisissant uniformément au hasard un item non placé et on l'insère dans une boite choisie au hasard.
 Si cela fait déborder la boite, on choisit un item au hasard dans cette boite pour respecter la capacité de celle-ci.
+La génération d'un voisinage d'une solution existante sera sans doute, pour n le nombre d'items, en $O(n log(n))$.
+Le calcul du volume total d'une solution est au maximum en $O(n*m)$.
+Le recuit simulé est en $O(k_{max}*P*(n\cdot \log(n)+n*m))$.
 
 \chapter*{2. Protocole expérimental}
 \addcontentsline{toc}{chapter}{2. Protocole expérimental}
 
+\section*{2.1 Algorithme vorace}
+\addcontentsline{toc}{section}{2.1 Algorithme vorace}
+
+Pour l?algorithme vorace, le travail va se résumer à l?écriture d?un programme en langage C++.
+Afin de nous faciliter la tâche, tout le développement se fait en environnement Linux.
+Préalablement, le professeur nous a fourni un dossier contenant un panel d?échantillons avec dans chacun d?eux : le nombre d?items, le nombre de boites, la capacité des boites et le volume de chacun des items.
+Le sujet du TP préconise l?implémentation de l?algorithme « Best-Fit-Decreasing » qui consiste à choisir les items par ordre décroissant de volume pour ensuite les placer dans une boite dont la capacité résiduelle est la plus faible après y avoir placé l?objet.
+Ainsi notre programme va marcher de la manière suivante :
+\begin{itemize}
+\item
+On lit le fichier mis en paramètre pour récupérer les valeurs de n,m,c et les valeurs des volumes de items. On stock ces derniers dans des variables. 
+\item
+On trie le tableau les volumes pour les classer de manière décroissante
+\item
+On fait une boucle sur les volumes pour les passer dans une fonction qui va avoir pour but de les placer unitairement dans les boites. Cette fonctionne prend en paramètre la volume à placer, les boites, la capacité des boites et le nombre de boites. On fait une boucle qui aura le même nombre d?itérations que le nombre de boites. Si le volume à placer plus le volume occupé de la boite est inférieur au minimum actuel qui correspond, au début, à la capacité de la boite alors on met à jour ce minimum à la somme des deux éléments énoncés au début. De plus, on ajoute le volume à placer dans le volume occupé de la boite et on indique via un booléen qu?on peut terminer la boucle. 
+\end{itemize}
+
+Avant-dernière étape, écrire un script bash qui va permettre d'appliquer l'algorithme à tous les exemplaires fournis, et enfin calcul avec matlab des moyennes des temps d'exécution et volume restant pour chaque taille d'exemplaire.
+
+\section*{2.2 Algorithme de programmation dynamique}
+\addcontentsline{toc}{section}{2.2 Algorithme de programmation dynamique}
+
+De même que pour l'algorithme vorace, on utilise C++, bash et matlab (ou plus exactement octave).
+L'algorithme de programmation dynamique est détaillé dans le sujet, on ne le reprendra pas ici.
+On peut cependant ajouter quelques explications :
+lors de l'écriture du programme, la difficulté était la manipulation d'un tableau à deux dimensions dont l'une des dimensions était indexée par plusieurs nombres (les $\mu$).
+De plus, pour prendre en compte l'intégralité des solutions, on est obligé de garder en mémoire l'ensemble des solutions d'une étape.
+On utilise pour cela des buffers.
+Ces buffers sont au nombre de 2, un pour la répartition à l'étape précédente, initialisé à 0, l'autre pour stocker l'étape courante.
+Ils sont bien entendus swappés à la fin.
+
+Ces buffers ont une taille c parmi m+c correspondant au nombre de combinaisons possibles avec m éléments de différentes capacités inférieures à c.
+
+Par ailleurs, on ne fera pas tourner cet algorithme sur les exemplaires à n > 32 ou m > 2 (sauf pour le cas m=3 et n=10), par manque de temps.
+
+\section*{2.3 Algorithme de recuit simulé}
+\addcontentsline{toc}{section}{2.3 Algorithme de recuit simulé}
+
+L'algorithme lui-même est fourni dans le sujet.
+Son implémentation n'a malheureusement pu être terminée (elle a été arrêtée au cours de l'étape de déboggage, tout est donc implémenté mais tout n'est pas correct).
+
+\chapter*{3. Présentation des résultats}
+\addcontentsline{toc}{chapter}{3. Présentation des résultats}
+
+\section*{3.1 Algorithme vorace}
+\addcontentsline{toc}{section}{3.1 Algorithme vorace}
+
+Dans cette partie, nous allons vous présenter les résultats de l?algorithme vorace, tout d?abord avec un tableau avec comme valeurs entrantes la taille des exemplaires, le nombre de boites, le temps de calcul moyen de l?algo et le volume moyen restant.
+
+\begin{figure}
+\includegraphics[width=14cm]{tableau_vor.jpg}
+\end{figure}
+
+Pour mieux visualiser les résultats, on va les transférer dans un histogramme empilé. Voici ci-dessous l?histogramme pour le temps de calcul moyen. 
+
+\begin{figure}
+\includegraphics[width=14cm]{histo_1.jpg}
+\end{figure}
+
+Et enfin un dernier histogramme représentant le volume moyen inutilisé par taille d?exemplaire et du nombre de boites. 
+
+\begin{figure}
+\includegraphics[width=14cm]{histo_2.jpg}
+\end{figure}
+
+\section*{3.2 Algorithme dynamique}
+\addcontentsline{toc}{section}{3.2 Algorithme dynamique}
+
+Comme annoncé précédemment, l'algorithme dynamique n'a tourné que sur des exemplaires de taille réduite, sa vitesse étant faible.
+On a obtenu les résultats suivants (cf .csv attaché) :
+\begin{itemize}
+\item
+Pour n=10 et m=2, le temps moyen est de l'ordre de 0,6s, le volume restant proche de 0 est 
+\item
+Pour n=10 et m=3, on passe brusquement à un temps juste sous la minute et le volume restant moyen augmente (environ 15);
+\item
+Pour n=32 et m=2, on repasse à un temps moyen d'environ 3s et le volume restant moyen est nul.
+\end{itemize}
+
+\chapter*{4. Analyse des résultats}
+\addcontentsline{toc}{chapter}{4. Analyse des résultats}
+
+\section*{4.1 Algorithme vorace}
+\addcontentsline{toc}{section}{4.1 Algorithme vorace}
+
+Au vu des histogrammes présentés pour l?algorithme vorace, on remarque bien que le temps de moyen de calcul augmente avec le nombre d?exemplaires à traiter mais pour une taille fixe, le temps de calcul ne varie pas beaucoup selon le nombre de boites (quelques millisecondes).
+Concernant le temps de calcul, on pouvait s?y attendre car pour un nombre n  d?items et un nombre m  de boites, notre fonction de placement possède une analyse asymptotique de $\Theta(n*m)$. Le nombre de boites de variant pas énormément, c?est bien le nombre d?items qui régit le temps de calcul de notre algorithme. 
+Sur le deuxième histogramme (représentant le volume total inutilisé) , on peut conclure sur le fait que l?algorithme n?est pas très optimal pour des petites tailles d?exemplaires alors qu?à partir de 100 exemplaires le volume total inutilisé converge fortement vers 0.  Mais de manière l?algorithme vorace est assez efficace, c?est assez logique car les principaux atouts de ces algorithmes sont qu?ils ont généralement une complexité de $\Theta(n\log(n))$ donc assez rapide et que leur fonctionnement se base sur la recherche d?une solution optimale locale. 
+
+\section*{4.2 Dynamique}
+\addcontentsline{toc}{section}{4.2 Dynamique}
+
+Le facteur qui influe le plus sur le temps d'exécution de cet algorithme est le nombre de boîtes.
+Par manque de temps encore, les coefficients numériques manquent.
+
+Enfin, l'effet de n sur le volume restant est comme précédemment positif : on a une solution optimale !
+
+\chapter*{5. Conclusion}
+\addcontentsline{toc}{chapter}{5. Conclusion}
+
+En définitive, des algorithmes examinés, on utiliserait le dynamique seulement dans les cas où le nombre de boîtes est faible et on se contenterait de l'algorithme vorace pour les autres cas, son efficacité suffisant dans la plupart des cas d'utilisation.
 
 
 \end{document}

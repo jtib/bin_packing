@@ -9,6 +9,7 @@
 #include <fstream>
 #include <vector>
 #include <random>
+#include <algorithm>
 
 using namespace std;
 using namespace std::chrono;
@@ -22,7 +23,7 @@ bool critere_metropolis(int delta, double theta){
     return false;
 }
 
-std::vector<vector<int> > voisin(std::vector<vector<int> > *boxes,std::vector<int> *placed, std::vector<int> *not_placed, int m,int c)
+std::vector<vector<int> > voisin(std::vector<vector<int> >& boxes,std::vector<int>& placed, std::vector<int>& not_placed, int m,int c)
 {
     //choose an item not already placed
     //put it in a box randomly chosen (uniform probability distribution)
@@ -36,10 +37,10 @@ std::vector<vector<int> > voisin(std::vector<vector<int> > *boxes,std::vector<in
     int v_to_remove;
     int box_volume;
     std::vector<int>::iterator it;
-    int nplcd=(*not_placed).size();
-    int plcd=(*placed).size();
+    int nplcd=not_placed.size();
+    int plcd=placed.size();
     std::vector<vector<int> > myvec(m);
-    std::copy((*boxes).begin(),(*boxes).end(),myvec.begin());
+    std::copy(boxes.begin(),boxes.end(),myvec.begin());
     //std::vector<int> *neighbor
 
     std::random_device rand_dev;
@@ -54,14 +55,14 @@ std::vector<vector<int> > voisin(std::vector<vector<int> > *boxes,std::vector<in
     s=distribution_s(generator);
 
     //addition of new volume to selected box
-    v_to_place=(*not_placed)[r];
+    v_to_place=not_placed[r];
     myvec[s].push_back(v_to_place);
     int size_box=myvec[s].size();
 
     //mv placed/v_to_place not_placed/
-    (*not_placed).erase((*not_placed).begin()+r);
-    (*placed).push_back(v_to_place);
-    int size_placed=(*placed).size();
+    not_placed.erase(not_placed.begin()+r);
+    placed.push_back(v_to_place);
+    int size_placed=placed.size();
 
     //Box volume > c?
     box_volume=0;
@@ -78,28 +79,27 @@ std::vector<vector<int> > voisin(std::vector<vector<int> > *boxes,std::vector<in
         v_to_remove=myvec[s][a];
         myvec[s].erase(myvec[s].begin()+a);
 
-        it=find((*placed).begin(),(*placed).end(),v_to_remove);
-        int index=it-(*placed).begin();
-        (*placed).erase((*placed).begin()+index);
-        (*not_placed).push_back(v_to_remove);
+        it=find(placed.begin(),placed.end(),v_to_remove);
+        int index=it-placed.begin();
+        placed.erase(placed.begin()+index);
+        not_placed.push_back(v_to_remove);
 
         //Box volume > c?
         box_volume=0;
         for(int vol : myvec[s])
             box_volume+=vol;
     }
-
     return myvec;
 }
 
-int volume_solution(std::vector<vector<int> > *sol,int m)
+int volume_solution(std::vector<vector<int> >& sol,int m)
 {
     int box_volume;
     int volume=0;
     for(int i=0;i<m;i++)
     {
         box_volume=0;
-        for(int vol : (*sol)[i])
+        for(int vol : (sol)[i])
             box_volume+=vol;
         volume+=box_volume;
     }
@@ -107,26 +107,26 @@ int volume_solution(std::vector<vector<int> > *sol,int m)
     return volume;
 }
 
-std::vector<vector<int> > recuit_simule(std::vector<int> *items,int m,int n,int c, int k_max, double T, int P, double alpha){
+std::vector<vector<int> > * recuit_simule(std::vector<int>& items,int m,int n,int c, int k_max, double T, int P, double alpha){
     //Creation of a set of empty boxes
-    std::vector<vector<int> > *S = new std::vector<vector<int> >;
-    (*S).resize(m);
+    std::vector<vector<int> > S;
+    S.resize(m);
 
     //Other declarations/initializations
-    std::vector<vector<int> > *S_meilleur=new std::vector<vector<int> >;
-    *S_meilleur=*S;
+    std::vector<vector<int> > S_meilleur;
+    S_meilleur=S;
     double theta = T;
-    std::vector<vector<int> > *S_prime=new std::vector<vector<int> >;
+    std::vector<vector<int> > S_prime;
     int delta;
-    std::vector<int> *not_placed=new std::vector<int>;
-    *not_placed=*items;
-    std::vector<int> *placed=new vector<int>;
+    std::vector<int> not_placed;
+    not_placed=items;
+    std::vector<int> placed;
 
     for(int k=1;k<=k_max;k++)
     {
         for(int j=1;j<=P;j++)
         {
-            *S_prime=voisin(S,placed,not_placed,m,c);
+            S_prime=voisin(S,placed,not_placed,m,c);
             cout << "voisin ok" << endl;
             delta=volume_solution(S_prime,m)-volume_solution(S,m);
             cout << delta << endl;
@@ -139,7 +139,7 @@ std::vector<vector<int> > recuit_simule(std::vector<int> *items,int m,int n,int 
         }
         theta=theta*alpha;
     }
-    return *S_meilleur;
+    return S_meilleur;
 }
 
 int main(int argc, char *argv[]){ 
@@ -161,7 +161,7 @@ int main(int argc, char *argv[]){
                     myfile >> n;
                     myfile >> m;
                     myfile >> c;
-                    std::vector<int> *items=new vector<int>;
+                    std::vector<int> items;
                     //(*items).resize(n);
 
                     //Calcul du volume total des items et ajout dans le vecteur d'items
@@ -170,7 +170,7 @@ int main(int argc, char *argv[]){
                     {
 
                         myfile >> vi;
-                        (*items).push_back(vi);
+                        items.push_back(vi);
                         volumeTotalItems+=vi;
                     }
 
@@ -181,19 +181,19 @@ int main(int argc, char *argv[]){
                     double T=40;
                     int P=20;
                     double alpha=0.99;
-                    std::vector<vector<int> > *solution;
+                    std::vector<vector<int> > solution;
 
                     //On debute la mesure du temps de calcul apres la derniere declaration
                     auto start=std::chrono::high_resolution_clock::now();
 
-                    (*solution)=recuit_simule(items,m,n,c,k_max,T,P,alpha);
+                    solution=recuit_simule(&items,m,n,c,k_max,T,P,alpha);
 
                     //On arrête la mesure du temps de calcul après la fonction qui place les items dans les boites
                     auto finish = std::chrono::high_resolution_clock::now();
                     //Calcul du temps d'execution 
                     auto microsec = std::chrono::duration_cast<std::chrono::microseconds>(finish-start);
 
-                    cout << "Volume totale de boites : " << volumeTotalBoites << endl;
+                    cout << "Volume total de boites : " << volumeTotalBoites << endl;
                     cout << "Volume total des items : " << volumeTotalItems << endl;
                     cout << "Temps de calcul : " << microsec.count() << " ms" << endl;
 

@@ -1,0 +1,22 @@
+#!/bin/bash
+
+for i in 2 3 4 6
+do
+    for j in {0..9}
+    do
+        nomFichier=ex_n0010_m000$i.$j
+        cheminFichier=MiseEnBoite/$nomFichier
+        ./dynamique-tests -f "$cheminFichier" >> dynamique-resultats.csv 
+    done
+done
+
+for i in 2 3 4 6
+do
+    for j in {0..9}
+    do
+        nomFichier=ex_n0032_m000$i.$j
+        cheminFichier=MiseEnBoite/$nomFichier
+        ./dynamique-tests -f "$cheminFichier" >> dynamique-resultats.csv 
+    done
+done
+
