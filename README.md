@@ -1,2 +1,3 @@
-# INF4705_TP2
-Optimisation du remplissage de m boîtes de capacité c par n objets de volume variable
+# INF4705 - TP2
+Packing objects of various volumes in a finite number of bins of varying capacity.
+Lab partner : https://github.com/DarkyMago
